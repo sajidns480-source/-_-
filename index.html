@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>𝐀𝐆𝐞𝐧𝐭_𝐀𝐤𝐚𝐬𝐡</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            width: 100vw; height: 100vh; overflow: hidden; 
+            background: #000; font-family: 'Rajdhani', sans-serif; 
+        }
+
+        .game-frame { 
+            width: 100%; height: 100%; border: none; 
+            position: absolute; top: 0; left: 0; z-index: 1;
+        }
+
+        /* প্যানেলের উইডথ সামান্য বাড়িয়ে উচ্চতা কমানো হয়েছে */
+        #draggable-panel {
+            position: fixed; top: 20%; left: 15%; z-index: 1000;
+            width: 175px; touch-action: none;
+        }
+
+        /* প্রোফাইল পিকচার */
+        .profile-wrap {
+            position: absolute; top: -22px; left: 50%;
+            transform: translateX(-50%); width: 45px; height: 45px;
+            border-radius: 50%; padding: 2px;
+            background: #00ff00;
+            z-index: 1001; box-shadow: 0 0 10px rgba(0, 255, 0, 0.6);
+        }
+        .profile-wrap img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #000; }
+
+        /* RGB বর্ডার এনিমেশন */
+        .rgb-box {
+            padding: 2px;
+            border-radius: 12px;
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            background-size: 400%;
+            animation: move-border 8s linear infinite;
+        }
+
+        @keyframes move-border {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
+        }
+
+        /* মেইন বক্স - প্যাডিং এবং গ্যাপ কমিয়ে লম্বা কমানো হয়েছে */
+        .main-container {
+            background: #070708;
+            border-radius: 10px;
+            padding: 25px 6px 8px 6px;
+            text-align: center;
+        }
+
+        /* লগইন পেইজ */
+        #login-page { display: flex; flex-direction: column; gap: 6px; }
+        .login-title { color: #ffd700; font-size: 9px; font-family: 'Orbitron', sans-serif; }
+        .pass-input { 
+            background: #111; border: 1px solid #00ff00; border-radius: 4px; 
+            color: #fff; padding: 6px; text-align: center; font-size: 11px; outline: none;
+        }
+        .login-btn { 
+            background: linear-gradient(90deg, #00ff00, #0088ff); border: none; 
+            padding: 6px; border-radius: 4px; color: #000; font-weight: 900; 
+            cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 9px;
+        }
+        .get-pass-btn {
+            background: #111; border: 1px solid #00e5ff; padding: 4px; 
+            border-radius: 4px; color: #00e5ff; font-weight: 700; text-decoration: none;
+            cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 8px;
+        }
+
+        /* হ্যাক পেইজ */
+        #hack-page { display: none; }
+
+        .user-name {
+            color: #00e5ff; font-family: 'Orbitron', sans-serif;
+            font-size: 9px; font-weight: 900; margin-bottom: 4px;
+        }
+
+        /* রো-ভিত্তিক পিরিয়ড ও টাইমার (উচ্চতা কমানোর জন্য পাশাপাশি সেট করা) */
+        .top-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 5px; padding: 4px 6px; margin-bottom: 4px;
+        }
+        .period-info { text-align: left; }
+        .period-title { color: #aaa; font-size: 7px; font-family: 'Orbitron', sans-serif; }
+        .period-number { color: #fff; font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 900; }
+        
+        .timer-mini {
+            background: #ff0055; color: #fff; font-family: 'Orbitron', sans-serif;
+            font-size: 11px; font-weight: 900; padding: 2px 6px; border-radius: 3px;
+            box-shadow: 0 0 5px rgba(255, 0, 85, 0.4);
+        }
+
+        /* অতিরিক্ত অ্যাডভান্সড ভুয়া ইনফরমেশন বক্স */
+        .fake-info-box {
+            background: rgba(0, 255, 229, 0.01);
+            border: 1px solid rgba(0, 255, 229, 0.08);
+            border-radius: 5px; padding: 4px; margin-bottom: 5px;
+            text-align: left; font-size: 8px; font-family: 'Orbitron', sans-serif;
+            color: #00ffc6; line-height: 1.2;
+        }
+        .fake-line { display: flex; justify-content: space-between; margin-bottom: 1px; }
+        .status-green { color: #00ff00; text-shadow: 0 0 3px #00ff00; }
+        .status-blue { color: #0088ff; }
+
+        /* সিগন্যাল ও নম্বর পাশাপাশি (উচ্চতা সেভ করার জন্য) */
+        .result-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255, 255, 255, 0.02); border: 1px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 5px; padding: 4px 6px; margin-bottom: 5px;
+        }
+        .signal-text { font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900; }
+        .big-signal { color: #00ff00; text-shadow: 0 0 10px #00ff00; }
+        .small-signal { color: #ff0055; text-shadow: 0 0 10px #ff0055; }
+        .number-text { color: #ffd700; font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700; }
+
+        /* টেলিগ্রাম বাটন */
+        .telegram-btn {
+            display: block; background: linear-gradient(135deg, #0088cc, #00a2ed); 
+            color: #fff; text-decoration: none;
+            font-family: 'Orbitron', sans-serif; font-size: 8px; font-weight: bold;
+            padding: 4px; border-radius: 4px; letter-spacing: 0.5px;
+        }
+    </style>
+<link rel="me" href="https://www.blogger.com/profile/15382680588395067201" />
+<meta name='google-adsense-platform-account' content='ca-host-pub-1556223355139109'/>
+<meta name='google-adsense-platform-domain' content='blogspot.com'/>
+</head>
+<body>
+
+    <iframe class="game-frame" src="https://dkwin9.com/#/register?invitationCode=821652022843"></iframe>
+
+    <div id="draggable-panel">
+        <div class="profile-wrap">
+            <img src="https://i.postimg.cc/9FqRDxL3/IMG-20260520-120714-578.jpg" alt="KEVIN">
+        </div>
+        
+        <div class="rgb-box">
+            <div class="main-container">
+                
+                <div id="login-page">
+                    <div class="login-title">𝐀𝐆𝐞𝐧𝐭_𝐀𝐤𝐚𝐬𝐡</div>
+                    <input type="password" id="pass-key" class="pass-input" placeholder="PASSWORD">
+                    <button class="login-btn" onclick="checkPass()">LOGIN</button>
+                    <a href="https://t.me/Akash_51233" target="_blank" class="get-pass-btn">GET PASSWORD</a>
+                </div>
+
+                <div id="hack-page">
+                    <div class="user-name">𝐀𝐆𝐞𝐧𝐭_𝐀𝐤𝐚𝐬𝐡</div>
+                    
+                    <div class="top-row">
+                        <div class="period-info">
+                            <span class="period-title">PERIOD: </span>
+                            <span class="period-number" id="period-id">---</span>
+                        </div>
+                        <div class="timer-mini" id="timer-val">30</div>
+                    </div>
+
+                    <div class="fake-info-box">
+                        <div class="fake-line"><span>SERVER HOST:</span> <span id="fake-server" class="status-green">NO</span></div>
+                        <div class="fake-line"><span>DATA CODES:</span> <span id="fake-data" class="status-blue">DESH_99X</span></div>
+                        <div class="fake-line"><span>INJECT STATUS:</span> <span class="status-green">SUCCESSFUL</span></div>
+                        <div class="fake-line"><span>ACCURACY:</span> <span id="fake-accuracy" style="color:#ffd700;">99.4%</span></div>
+                    </div>
+                    
+                    <div class="result-row">
+                        <div class="signal-text big-signal" id="signal-label">WAIT</div>
+                        <div class="number-text" id="number-label">NUM: --</div>
+                    </div>
+                    
+                    <a href="https://t.me/birestejan90" target="_blank" class="telegram-btn">TELEGRAM CHANNEL</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkPass() {
+            const pass = document.getElementById('pass-key').value;
+            if (pass === "@Akash_51233") {
+                document.getElementById('login-page').style.display = 'none';
+                document.getElementById('hack-page').style.display = 'block';
+                updateHack();
+            } else {
+                alert("WRONG PASSWORD!");
+            }
+        }
+
+        const panel = document.getElementById('draggable-panel');
+        let isDragging = false, offX, offY;
+
+        panel.addEventListener('touchstart', (e) => {
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A') {
+                isDragging = true;
+                offX = e.touches[0].clientX - panel.offsetLeft;
+                offY = e.touches[0].clientY - panel.offsetTop;
+            }
+        }, {passive: false});
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            let x = e.touches[0].clientX - offX;
+            let y = e.touches[0].clientY - offY;
+            x = Math.max(0, Math.min(x, window.innerWidth - panel.offsetWidth));
+            y = Math.max(0, Math.min(y, window.innerHeight - panel.offsetHeight));
+            panel.style.left = x + 'px';
+            panel.style.top = y + 'px';
+        }, {passive: false});
+
+        document.addEventListener('touchend', () => isDragging = false);
+
+        function updateHack() {
+            setInterval(() => {
+                const now = new Date();
+                const seconds = now.getSeconds();
+                const rem = 30 - (seconds % 30);
+                document.getElementById('timer-val').innerText = rem;
+
+                const interval = Math.floor(((now.getHours() * 3600) + (now.getMinutes() * 60) + seconds) / 30);
+                document.getElementById('period-id').innerText = (interval + 1).toString().slice(-3);
+
+                if (rem === 30) {
+                    const isBig = Math.random() > 0.5;
+                    const label = document.getElementById('signal-label');
+                    label.innerText = isBig ? "BIG" : "SMALL";
+                    label.className = `signal-text ${isBig ? 'big-signal' : 'small-signal'}`;
+
+                    let lotteryNum;
+                    if (isBig) {
+                        lotteryNum = Math.floor(Math.random() * 5) + 5; 
+                    } else {
+                        lotteryNum = Math.floor(Math.random() * 5); 
+                    }
+                    document.getElementById('number-label').innerText = `NUM: ${lotteryNum}`;
+
+                    // প্রতি ৩০ সেকেন্ডে ভুয়া সার্ভার ও ডেটা পরিবর্তন
+                    const randomAccuracy = (97 + Math.random() * 2).toFixed(1) + "%";
+                    const fakeHex = "DESH_" + Math.floor(10 + Math.random() * 89) + "X";
+                    
+                    document.getElementById('fake-accuracy').innerText = randomAccuracy;
+                    document.getElementById('fake-data').innerText = fakeHex;
+                    document.getElementById('fake-server').innerText = fakeSvr;
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
