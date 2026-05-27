@@ -1,183 +1,423 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>𝐀𝐆𝐞𝐧𝐭_𝐀𝐤𝐚𝐬𝐡</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>NS PREMIUM VIP • CONTROL PANEL</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@700&display=swap');
+        /* RESET + FULLSCREEN BASE */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000000;
+            font-family: 'Rajdhani', sans-serif;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        /* ----- IFRAME FIX ----- */
+        #game-frame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+            z-index: 1;
+            touch-action: pan-x pan-y;
+            -webkit-overflow-scrolling: auto;
+            overflow: hidden;
+        }
         
-        body { 
-            width: 100vw; height: 100vh; overflow: hidden; 
-            background: #000; font-family: 'Rajdhani', sans-serif; 
+        /* COMPACT DRAGGABLE PANEL */
+        #drag-container {
+            position: fixed;
+            top: 10%;
+            left: 10px;
+            z-index: 9999;
+            cursor: grab;
+            touch-action: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            filter: drop-shadow(0 0 8px rgba(157, 78, 221, 0.4));
+            will-change: transform;
+            width: 195px;
         }
 
-        .game-frame { 
-            width: 100%; height: 100%; border: none; 
-            position: absolute; top: 0; left: 0; z-index: 1;
+        #drag-container:active {
+            cursor: grabbing;
         }
 
-        /* প্যানেলের উইডথ সামান্য বাড়িয়ে উচ্চতা কমানো হয়েছে */
-        #draggable-panel {
-            position: fixed; top: 20%; left: 15%; z-index: 1000;
-            width: 175px; touch-action: none;
-        }
-
-        /* প্রোফাইল পিকচার */
-        .profile-wrap {
-            position: absolute; top: -22px; left: 50%;
-            transform: translateX(-50%); width: 45px; height: 45px;
-            border-radius: 50%; padding: 2px;
-            background: #00ff00;
-            z-index: 1001; box-shadow: 0 0 10px rgba(0, 255, 0, 0.6);
-        }
-        .profile-wrap img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #000; }
-
-        /* RGB বর্ডার এনিমেশন */
-        .rgb-box {
-            padding: 2px;
+        /* PREMIUM VIOLET BORDER */
+        .neon-border {
+            position: relative;
+            padding: 1.5px;
+            overflow: hidden;
             border-radius: 12px;
-            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
-            background-size: 400%;
-            animation: move-border 8s linear infinite;
+            background: #000;
+            width: 100%;
         }
 
-        @keyframes move-border {
-            0% { background-position: 0 0; }
-            50% { background-position: 400% 0; }
-            100% { background-position: 0 0; }
+        .neon-border::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(#ff007f, #7b2cbf, #9d4edd, #ff0055, #7b2cbf);
+            animation: rotate 3s linear infinite;
+            z-index: 0;
         }
 
-        /* মেইন বক্স - প্যাডিং এবং গ্যাপ কমিয়ে লম্বা কমানো হয়েছে */
-        .main-container {
-            background: #070708;
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .hack-box {
+            background: rgba(12, 5, 20, 0.93);
+            backdrop-filter: blur(6px);
+            border-radius: 11px;
+            position: relative;
+            z-index: 5;
+            width: 100%;
+            padding: 8px;
+            box-shadow: inset 0 0 8px rgba(157, 78, 221, 0.3);
+        }
+
+        /* HEADER */
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(157, 78, 221, 0.2);
+            padding-bottom: 4px;
+            margin-bottom: 8px;
+        }
+
+        .title {
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            background: linear-gradient(45deg, #ff007f, #e0aaff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .title::before {
+            content: '';
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            background: #00ff66;
+            border-radius: 50%;
+            box-shadow: 0 0 4px #00ff66;
+        }
+
+        /* PERIOD & TIMER ROW */
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 4px 6px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            font-family: 'Orbitron', monospace;
+            font-size: 8.5px;
+        }
+        #full-id { color: #c8b6ff; font-weight: bold; }
+        #timer-num { color: #00ffcc; font-weight: 900; text-shadow: 0 0 4px #00ffcc; }
+
+        /* PREDICTION AREA */
+        .predict-area {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(157, 78, 221, 0.15);
+            border-radius: 8px;
+            padding: 6px;
+            text-align: center;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .res-bs {
+            font-size: 24px;
+            font-weight: 900;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 1px;
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .res-col {
+            font-size: 8.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            padding: 1px 8px;
             border-radius: 10px;
-            padding: 25px 6px 8px 6px;
+            color: #fff;
+        }
+
+        /* DASHBOARD GRID */
+        .dash-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+
+        .grid-box {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            padding: 4px;
+            font-size: 8.5px;
+        }
+
+        .box-title {
+            font-size: 8px;
+            color: #7b2cbf;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+
+        /* HISTORY */
+        .hist-item {
+            font-family: 'Orbitron', monospace;
+            display: flex;
+            justify-content: space-between;
+            color: #bbb;
+            margin-bottom: 1px;
+        }
+
+        /* ACCURACY */
+        .accuracy-val {
+            font-family: 'Orbitron', monospace;
+            font-size: 14px;
+            font-weight: 900;
+            color: #fff;
             text-align: center;
         }
-
-        /* লগইন পেইজ */
-        #login-page { display: flex; flex-direction: column; gap: 6px; }
-        .login-title { color: #ffd700; font-size: 9px; font-family: 'Orbitron', sans-serif; }
-        .pass-input { 
-            background: #111; border: 1px solid #00ff00; border-radius: 4px; 
-            color: #fff; padding: 6px; text-align: center; font-size: 11px; outline: none;
+        .safe-tag {
+            font-size: 7.5px;
+            color: #00ff66;
+            text-align: center;
+            font-weight: bold;
         }
-        .login-btn { 
-            background: linear-gradient(90deg, #00ff00, #0088ff); border: none; 
-            padding: 6px; border-radius: 4px; color: #000; font-weight: 900; 
-            cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 9px;
+        .progress-bar {
+            width: 100%;
+            height: 2px;
+            background: #240046;
+            border-radius: 1px;
+            overflow: hidden;
+            margin-top: 2px;
         }
-        .get-pass-btn {
-            background: #111; border: 1px solid #00e5ff; padding: 4px; 
-            border-radius: 4px; color: #00e5ff; font-weight: 700; text-decoration: none;
-            cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 8px;
+        .progress-fill {
+            width: 50%;
+            height: 100%;
+            background: #00ff66;
+            animation: fake-load 1.5s infinite linear;
         }
-
-        /* হ্যাক পেইজ */
-        #hack-page { display: none; }
-
-        .user-name {
-            color: #00e5ff; font-family: 'Orbitron', sans-serif;
-            font-size: 9px; font-weight: 900; margin-bottom: 4px;
+        @keyframes fake-load {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(200%); }
         }
 
-        /* রো-ভিত্তিক পিরিয়ড ও টাইমার (উচ্চতা কমানোর জন্য পাশাপাশি সেট করা) */
-        .top-row {
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 5px; padding: 4px 6px; margin-bottom: 4px;
+        /* TREND FOOTER */
+        .trend-footer {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            padding: 4px 6px;
+            font-size: 8.5px;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            margin-bottom: 8px;
         }
-        .period-info { text-align: left; }
-        .period-title { color: #aaa; font-size: 7px; font-family: 'Orbitron', sans-serif; }
-        .period-number { color: #fff; font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 900; }
-        
-        .timer-mini {
-            background: #ff0055; color: #fff; font-family: 'Orbitron', sans-serif;
-            font-size: 11px; font-weight: 900; padding: 2px 6px; border-radius: 3px;
-            box-shadow: 0 0 5px rgba(255, 0, 85, 0.4);
+        .trend-line { display: flex; justify-content: space-between; }
+        .trend-lbl { color: #9d4edd; }
+        .trend-val { color: #fff; }
+
+        /* LOGIN FORM */
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
-        /* অতিরিক্ত অ্যাডভান্সড ভুয়া ইনফরমেশন বক্স */
-        .fake-info-box {
-            background: rgba(0, 255, 229, 0.01);
-            border: 1px solid rgba(0, 255, 229, 0.08);
-            border-radius: 5px; padding: 4px; margin-bottom: 5px;
-            text-align: left; font-size: 8px; font-family: 'Orbitron', sans-serif;
-            color: #00ffc6; line-height: 1.2;
+        input {
+            width: 100%;
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid #7b2cbf;
+            background: #03070f;
+            color: #fff;
+            text-align: center;
+            font-size: 10px;
+            font-weight: bold;
+            outline: none;
         }
-        .fake-line { display: flex; justify-content: space-between; margin-bottom: 1px; }
-        .status-green { color: #00ff00; text-shadow: 0 0 3px #00ff00; }
-        .status-blue { color: #0088ff; }
 
-        /* সিগন্যাল ও নম্বর পাশাপাশি (উচ্চতা সেভ করার জন্য) */
-        .result-row {
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255, 255, 255, 0.02); border: 1px dashed rgba(255, 255, 255, 0.1);
-            border-radius: 5px; padding: 4px 6px; margin-bottom: 5px;
+        input:focus {
+            border-color: #9d4edd;
+            box-shadow: 0 0 5px #9d4edd;
         }
-        .signal-text { font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900; }
-        .big-signal { color: #00ff00; text-shadow: 0 0 10px #00ff00; }
-        .small-signal { color: #ff0055; text-shadow: 0 0 10px #ff0055; }
-        .number-text { color: #ffd700; font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700; }
 
-        /* টেলিগ্রাম বাটন */
-        .telegram-btn {
-            display: block; background: linear-gradient(135deg, #0088cc, #00a2ed); 
-            color: #fff; text-decoration: none;
-            font-family: 'Orbitron', sans-serif; font-size: 8px; font-weight: bold;
-            padding: 4px; border-radius: 4px; letter-spacing: 0.5px;
+        /* BUTTONS */
+        button.action-btn {
+            background: linear-gradient(95deg, #7b2cbf, #ff007f);
+            color: white;
+            border: none;
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 9px;
+            cursor: pointer;
+            font-weight: 800;
+            width: 100%;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        /* GET PIN BUTTON */
+        .get-pin-btn {
+            background: linear-gradient(135deg, #00b4db, #0083b0);
+            color: #fff;
+            border: none;
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 9px;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            width: 100%;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        button:active { transform: scale(0.97); }
+
+        /* WAITING OVERLAY */
+        .waiting {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 7, 27, 0.98);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 9px;
+            color: #ffcc00;
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+            animation: blink 0.7s infinite alternate;
+            display: none;
+        }
+
+        @keyframes blink { 0% { opacity: 1; } 100% { opacity: 0.5; } }
+
+        /* TOAST */
+        .toast-alert {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff004ccc;
+            backdrop-filter: blur(8px);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 50px;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 10px;
+            z-index: 10000;
+            animation: fadeUp 1.5s ease forwards;
+        }
+
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+            15% { opacity: 1; transform: translateX(-50%) translateY(0px); }
+            85% { opacity: 1; transform: translateX(-50%) translateY(0px); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-15px); visibility: hidden; }
         }
     </style>
-<link rel="me" href="https://www.blogger.com/profile/15382680588395067201" />
-<meta name='google-adsense-platform-account' content='ca-host-pub-1556223355139109'/>
-<meta name='google-adsense-platform-domain' content='blogspot.com'/>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body oncontextmenu="return false">
 
-    <iframe class="game-frame" src="https://dkwin9.com/#/register?invitationCode=821652022843"></iframe>
+    <iframe id="game-frame" 
+            src="https://hgnice.cc/#/register?invitationCode=288531961584" 
+            sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation-by-user-activation allow-downloads"
+            referrerpolicy="no-referrer"
+            loading="eager">
+    </iframe>
 
-    <div id="draggable-panel">
-        <div class="profile-wrap">
-            <img src="https://i.postimg.cc/9FqRDxL3/IMG-20260520-120714-578.jpg" alt="KEVIN">
-        </div>
-        
-        <div class="rgb-box">
-            <div class="main-container">
+    <div id="drag-container">
+        <div class="neon-border">
+            <div class="hack-box">
                 
-                <div id="login-page">
-                    <div class="login-title">𝐀𝐆𝐞𝐧𝐭_𝐀𝐤𝐚𝐬𝐡</div>
-                    <input type="password" id="pass-key" class="pass-input" placeholder="PASSWORD">
-                    <button class="login-btn" onclick="checkPass()">LOGIN</button>
-                    <a href="https://t.me/Akash_51233" target="_blank" class="get-pass-btn">GET PASSWORD</a>
+                <div class="panel-header">
+                    <div class="title">NS PREMIUM</div>
+                    <div style="color: #9d4edd; font-size: 8px; font-weight: bold;">VIP</div>
                 </div>
 
-                <div id="hack-page">
-                    <div class="user-name">𝐀𝐆𝐞𝐧𝐭_𝐀𝐤𝐚𝐬𝐡</div>
+                <div id="login-form" class="login-container">
+                    <input type="password" id="pin" placeholder="ENTER SECRET PIN" autocomplete="off">
+                    <button class="action-btn" onclick="activate()">🔓 ACTIVATE HACK</button>
+                    <button class="get-pin-btn" onclick="window.open('https://t.me/NSsajid', '_blank')">🔑 GET PIN</button>
+                </div>
+
+                <div id="res-area" style="display:none">
                     
-                    <div class="top-row">
-                        <div class="period-info">
-                            <span class="period-title">PERIOD: </span>
-                            <span class="period-number" id="period-id">---</span>
-                        </div>
-                        <div class="timer-mini" id="timer-val">30</div>
+                    <div class="status-row">
+                        <div id="full-id">ID: LOADING...</div>
+                        <div id="timer-num">00</div>
                     </div>
 
-                    <div class="fake-info-box">
-                        <div class="fake-line"><span>SERVER HOST:</span> <span id="fake-server" class="status-green">NO</span></div>
-                        <div class="fake-line"><span>DATA CODES:</span> <span id="fake-data" class="status-blue">DESH_99X</span></div>
-                        <div class="fake-line"><span>INJECT STATUS:</span> <span class="status-green">SUCCESSFUL</span></div>
-                        <div class="fake-line"><span>ACCURACY:</span> <span id="fake-accuracy" style="color:#ffd700;">99.4%</span></div>
+                    <div class="predict-area">
+                        <div id="resBS" class="res-bs">---</div>
+                        <div id="resCol" class="res-col">---</div>
+                        <div id="wait-msg" class="waiting">📡 ANALYZING SIGNAL...</div>
                     </div>
-                    
-                    <div class="result-row">
-                        <div class="signal-text big-signal" id="signal-label">WAIT</div>
-                        <div class="number-text" id="number-label">NUM: --</div>
+
+                    <div class="dash-grid">
+                        <div class="grid-box">
+                            <div class="box-title">📜 HISTORY</div>
+                            <div id="fake-hist-list"></div>
+                        </div>
+                        <div class="grid-box" style="display: flex; flex-direction: column; justify-content: center;">
+                            <div class="box-title" style="text-align:center;">🎯 ACCURACY</div>
+                            <div class="accuracy-val">97.3%</div>
+                            <div class="safe-tag">✓ SAFE</div>
+                            <div class="progress-bar"><div class="progress-fill"></div></div>
+                        </div>
                     </div>
-                    
-                    <a href="https://t.me/birestejan90" target="_blank" class="telegram-btn">TELEGRAM CHANNEL</a>
+
+                    <div class="trend-footer">
+                        <div class="trend-line"><span class="trend-lbl">TREND:</span><span id="trend-val" class="trend-val">---</span></div>
+                        <div class="trend-line"><span class="trend-lbl">SUGGEST:</span><span id="suggest-val" class="trend-val">---</span></div>
+                        <div class="trend-line"><span class="trend-lbl">RISK:</span><span style="color: #00ff66;">LOW</span></div>
+                    </div>
+
+                    <button class="action-btn" onclick="window.open('https://t.me/NexJobGlobal', '_blank')">🔵 JOIN VIP SIGNALS</button>
                 </div>
 
             </div>
@@ -185,74 +425,176 @@
     </div>
 
     <script>
-        function checkPass() {
-            const pass = document.getElementById('pass-key').value;
-            if (pass === "@Akash_51233") {
-                document.getElementById('login-page').style.display = 'none';
-                document.getElementById('hack-page').style.display = 'block';
-                updateHack();
+        // PASSWORD PROTECTION
+        function activate() {
+            const pinInput = document.getElementById('pin');
+            const pinValue = pinInput.value.trim();
+            let isValid = false;
+            try {
+                if (pinValue === "Nssajid") { 
+                    isValid = true;
+                }
+            } catch(e) {}
+
+            if (isValid) {
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('res-area').style.display = 'block';
+                startHackSystem();
+                pinInput.value = '';
             } else {
-                alert("WRONG PASSWORD!");
+                showToast("⛔ WRONG PIN! ACCESS DENIED ⛔");
+                const inp = document.getElementById('pin');
+                inp.style.border = "1px solid #ff3366";
+                setTimeout(() => { inp.style.border = "1px solid #7b2cbf"; }, 600);
             }
         }
 
-        const panel = document.getElementById('draggable-panel');
-        let isDragging = false, offX, offY;
+        function showToast(msg) {
+            let existingToast = document.querySelector('.toast-alert');
+            if(existingToast) existingToast.remove();
+            const toast = document.createElement('div');
+            toast.className = 'toast-alert';
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => { if(toast) toast.remove(); }, 1800);
+        }
 
-        panel.addEventListener('touchstart', (e) => {
-            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A') {
-                isDragging = true;
-                offX = e.touches[0].clientX - panel.offsetLeft;
-                offY = e.touches[0].clientY - panel.offsetTop;
-            }
-        }, {passive: false});
-
-        document.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            let x = e.touches[0].clientX - offX;
-            let y = e.touches[0].clientY - offY;
-            x = Math.max(0, Math.min(x, window.innerWidth - panel.offsetWidth));
-            y = Math.max(0, Math.min(y, window.innerHeight - panel.offsetHeight));
-            panel.style.left = x + 'px';
-            panel.style.top = y + 'px';
-        }, {passive: false});
-
-        document.addEventListener('touchend', () => isDragging = false);
-
-        function updateHack() {
-            setInterval(() => {
+        let hackInterval = null;
+        
+        function startHackSystem() {
+            if(hackInterval) clearInterval(hackInterval);
+            const timerElement = document.getElementById('timer-num');
+            const idElement = document.getElementById('full-id');
+            const bsElement = document.getElementById('resBS');
+            const colElement = document.getElementById('resCol');
+            const waitMsg = document.getElementById('wait-msg');
+            
+            const trendElement = document.getElementById('trend-val');
+            const suggestElement = document.getElementById('suggest-val');
+            const histListElement = document.getElementById('fake-hist-list');
+            
+            function updateHackUI() {
                 const now = new Date();
                 const seconds = now.getSeconds();
-                const rem = 30 - (seconds % 30);
-                document.getElementById('timer-val').innerText = rem;
-
-                const interval = Math.floor(((now.getHours() * 3600) + (now.getMinutes() * 60) + seconds) / 30);
-                document.getElementById('period-id').innerText = (interval + 1).toString().slice(-3);
-
-                if (rem === 30) {
-                    const isBig = Math.random() > 0.5;
-                    const label = document.getElementById('signal-label');
-                    label.innerText = isBig ? "BIG" : "SMALL";
-                    label.className = `signal-text ${isBig ? 'big-signal' : 'small-signal'}`;
-
-                    let lotteryNum;
-                    if (isBig) {
-                        lotteryNum = Math.floor(Math.random() * 5) + 5; 
-                    } else {
-                        lotteryNum = Math.floor(Math.random() * 5); 
-                    }
-                    document.getElementById('number-label').innerText = `NUM: ${lotteryNum}`;
-
-                    // প্রতি ৩০ সেকেন্ডে ভুয়া সার্ভার ও ডেটা পরিবর্তন
-                    const randomAccuracy = (97 + Math.random() * 2).toFixed(1) + "%";
-                    const fakeHex = "DESH_" + Math.floor(10 + Math.random() * 89) + "X";
-                    
-                    document.getElementById('fake-accuracy').innerText = randomAccuracy;
-                    document.getElementById('fake-data').innerText = fakeHex;
-                    document.getElementById('fake-server').innerText = fakeSvr;
+                let remaining = seconds < 30 ? (30 - seconds) : (60 - seconds);
+                
+                timerElement.innerText = remaining < 10 ? "0" + remaining : "" + remaining;
+                
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const yyyymmdd = `${year}${month}${day}`;
+                
+                let X = (now.getHours() * 120) + (now.getMinutes() * 2) + (seconds >= 30 ? 2 : 1);
+                idElement.innerText = `ID: ${yyyymmdd}1000${X}`;
+                
+                const pseudoVal = (X * 37 + 7) % 10;
+                const digit = pseudoVal;
+                const isBig = digit >= 5;
+                
+                const textResult = isBig ? "BIG" : "SMALL";
+                bsElement.innerText = textResult;
+                bsElement.style.color = isBig ? "#ff007f" : "#00ffcc";
+                bsElement.style.textShadow = isBig ? "0 0 8px #ff007f" : "0 0 8px #00ffcc";
+                
+                trendElement.innerText = textResult;
+                suggestElement.innerText = textResult;
+                
+                let colorType = "#ff0055";
+                let resultName = "RED";
+                if (digit === 0 || digit === 5) {
+                    resultName = digit === 0 ? "RED + VIOL" : "GRN + VIOL";
+                    colorType = "#7b2cbf";
+                } else if ([2,4,6,8].includes(digit)) {
+                    resultName = "RED";
+                    colorType = "#ff0055";
+                } else if ([1,3,7,9].includes(digit)) {
+                    resultName = "GREEN";
+                    colorType = "#00ff66";
                 }
-            }, 1000);
+                
+                colElement.innerText = resultName;
+                colElement.style.background = colorType;
+                colElement.style.boxShadow = `0 0 4px ${colorType}`;
+                
+                let histHtml = '';
+                for (let i = 1; i <= 3; i++) {
+                    let prevX = X - i;
+                    let prevSeed = (prevX * 37 + 7) % 10;
+                    let prevBS = prevSeed >= 5 ? "B" : "S";
+                    let hColor = prevSeed % 2 === 0 ? "#ff0055" : "#00ff66";
+                    histHtml += `<div class="hist-item">
+                        <span>${String(prevX).slice(-3)}</span>
+                        <span style="color:${hColor}">${prevBS}(${prevSeed})</span>
+                    </div>`;
+                }
+                histListElement.innerHTML = histHtml;
+                
+                if(remaining <= 5) {
+                    waitMsg.style.display = "flex";
+                } else {
+                    waitMsg.style.display = "none";
+                }
+            }
+            
+            updateHackUI();
+            hackInterval = setInterval(updateHackUI, 300);
         }
+        
+        // DRAG & DROP CONTROL
+        const dragContainer = document.getElementById('drag-container');
+        let isDragging = false, startMouseX = 0, startMouseY = 0, elementStartX = 0, elementStartY = 0;
+        
+        function getCurrentTranslate() {
+            const style = window.getComputedStyle(dragContainer);
+            const transform = style.transform;
+            if(transform === 'none') return { x: 0, y: 0 };
+            const matrix = transform.match(/matrix.*\((.+)\)/);
+            if(matrix) {
+                const values = matrix[1].split(', ');
+                return { x: parseFloat(values[4]) || 0, y: parseFloat(values[5]) || 0 };
+            }
+            return { x: 0, y: 0 };
+        }
+        
+        function onDragStart(e) {
+            const target = e.target;
+            if(target.tagName === 'INPUT' || target.tagName === 'BUTTON' || target.closest('input') || target.closest('button')) return;
+            e.preventDefault();
+            isDragging = true;
+            const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+            startMouseX = clientX; startMouseY = clientY;
+            const pos = getCurrentTranslate();
+            elementStartX = pos.x; elementStartY = pos.y;
+        }
+        
+        function onDragMove(e) {
+            if(!isDragging) return;
+            e.preventDefault();
+            const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+            let newX = elementStartX + (clientX - startMouseX);
+            let newY = elementStartY + (clientY - startMouseY);
+            
+            const maxX = window.innerWidth - dragContainer.offsetWidth - 5;
+            const minX = -dragContainer.offsetWidth + 40;
+            const maxY = window.innerHeight - dragContainer.offsetHeight - 15;
+            const minY = 5;
+            
+            dragContainer.style.transform = `translate3d(${Math.min(maxX, Math.max(minX, newX))}px, ${Math.min(maxY, Math.max(minY, newY))}px, 0)`;
+        }
+        
+        function onDragEnd() { isDragging = false; }
+        
+        dragContainer.addEventListener('mousedown', onDragStart);
+        window.addEventListener('mousemove', onDragMove);
+        window.addEventListener('mouseup', onDragEnd);
+        dragContainer.addEventListener('touchstart', onDragStart, {passive: false});
+        window.addEventListener('touchmove', onDragMove, {passive: false});
+        window.addEventListener('touchend', onDragEnd);
+        window.addEventListener('load', () => { dragContainer.style.transform = 'translate3d(0px, 0px, 0)'; });
+        document.body.addEventListener('touchmove', (e) => { if (e.touches && e.touches.length >= 2) e.preventDefault(); }, { passive: false });
     </script>
 </body>
 </html>
