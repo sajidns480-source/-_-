@@ -493,12 +493,14 @@
                 const isBig = digit >= 5;
                 
                 const textResult = isBig ? "BIG" : "SMALL";
-                bsElement.innerText = textResult;
+                
+                // এখানে টেক্সটের সাথে (digit) বা সংখ্যা যুক্ত করে দেওয়া হলো
+                bsElement.innerText = `${textResult} (${digit})`;
                 bsElement.style.color = isBig ? "#ff007f" : "#00ffcc";
                 bsElement.style.textShadow = isBig ? "0 0 8px #ff007f" : "0 0 8px #00ffcc";
                 
-                trendElement.innerText = textResult;
-                suggestElement.innerText = textResult;
+                trendElement.innerText = `${textResult} (${digit})`;
+                suggestElement.innerText = `${textResult} (${digit})`;
                 
                 let colorType = "#ff0055";
                 let resultName = "RED";
